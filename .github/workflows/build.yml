@@ -17,13 +17,13 @@ jobs:
         run: |
           mkdir -p app/src/main/java/com/example/airaligner
           
-          # Переносим файлы исходного кода в нужную директорию
+          # Переносим файлы кода в нужную папку
           mv AirOsClient.kt app/src/main/java/com/example/airaligner/ 2>/dev/null || true
           mv AudioBeepEngine.kt app/src/main/java/com/example/airaligner/ 2>/dev/null || true
           mv MainActivity.kt app/src/main/java/com/example/airaligner/ 2>/dev/null || true
           mv AndroidManifest.xml app/src/main/ 2>/dev/null || true
 
-          # Создаем файл app/build.gradle.kts
+          # Создаем файл конфигурации приложения
           cat << 'EOF' > app/build.gradle.kts
           plugins {
               id("com.android.application")
@@ -82,4 +82,3 @@ jobs:
         with:
           name: AirAligner-APK
           path: app/build/outputs/apk/debug/app-debug.apk
-          
