@@ -13,17 +13,46 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Auto-structure Project & Create app/build.gradle.kts
+      - name: Generate Full Android Project Framework
         run: |
+          # 1. Корневые настройки Gradle
+          cat << 'EOF' > settings.gradle.kts
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "AirAligner"
+          include(":app")
+          EOF
+
+          # 2. Корневой build.gradle.kts
+          cat << 'EOF' > build.gradle.kts
+          plugins {
+              id("com.android.application") version "8.2.2" apply false
+              id("org.jetbrains.kotlin.android") version "1.9.22" apply false
+          }
+          EOF
+
+          # 3. Создаем структуру каталогов
           mkdir -p app/src/main/java/com/example/airaligner
-          
-          # Переносим файлы кода в нужную папку
+
+          # 4. Переносим исходники в нужную папку
           mv AirOsClient.kt app/src/main/java/com/example/airaligner/ 2>/dev/null || true
           mv AudioBeepEngine.kt app/src/main/java/com/example/airaligner/ 2>/dev/null || true
           mv MainActivity.kt app/src/main/java/com/example/airaligner/ 2>/dev/null || true
           mv AndroidManifest.xml app/src/main/ 2>/dev/null || true
 
-          # Создаем файл конфигурации приложения
+          # 5. Конфигурация модуля app
           cat << 'EOF' > app/build.gradle.kts
           plugins {
               id("com.android.application")
@@ -82,3 +111,5 @@ jobs:
         with:
           name: AirAligner-APK
           path: app/build/outputs/apk/debug/app-debug.apk
+
+          
